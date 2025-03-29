@@ -6,12 +6,8 @@
 #import <sys/utsname.h>
 #import <substrate.h>
 #import <rootless.h>
-#import <MediaPlayer/MediaPlayer.h>
-#import <AVFoundation/AVFoundation.h>
-#import <AVKit/AVKit.h>         // For AVPlayer and AVPlayerViewController
-#import <MobileCoreServices/MobileCoreServices.h> // For kUTTypeMovie and kUTTypeVideo
-#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
+#import "Tweaks/FLEX/FLEX.h"
 #import "Tweaks/YouTubeHeader/YTAppDelegate.h"
 #import "Tweaks/YouTubeHeader/YTPlayerViewController.h"
 #import "Tweaks/YouTubeHeader/YTQTMButton.h"
@@ -43,12 +39,6 @@
 #import "Tweaks/YouTubeHeader/YTWatchPullToFullController.h"
 #import "Tweaks/YouTubeHeader/YTPlayerBarController.h"
 #import "Tweaks/YouTubeHeader/YTResponder.h"
-#import "Tweaks/YouTubeHeader/YTMainAppControlsOverlayView.h"
-#import "Tweaks/YouTubeHeader/YTMultiSizeViewController.h"
-#import "Tweaks/YouTubeHeader/YTWatchLayerViewController.h"
-#import "Tweaks/YouTubeHeader/YTPageStyleController.h"
-#import "Tweaks/YouTubeHeader/YTRightNavigationButtons.h"
-#import "Tweaks/YouTubeHeader/YTInlinePlayerBarView.h"
 
 #define LOC(x) [tweakBundle localizedStringForKey:x value:nil table:nil]
 #define YT_BUNDLE_ID @"com.google.ios.youtube"
@@ -56,30 +46,6 @@
 #define LOWCONTRASTMODE_CUTOFF_VERSION @"17.38.10"
 #define IS_ENABLED(k) [[NSUserDefaults standardUserDefaults] boolForKey:k]
 #define APP_THEME_IDX [[NSUserDefaults standardUserDefaults] integerForKey:@"appTheme"]
-
-// Avoid issues with multiple includes of this file
-#pragma once
-
-// Helper methods for key retrieval
-#define IsEnabled(key) [[NSUserDefaults standardUserDefaults] boolForKey:key]
-#define GetInteger(key) [[NSUserDefaults standardUserDefaults] integerForKey:key] // NSInteger type
-#define GetFloat(key) [[NSUserDefaults standardUserDefaults] floatForKey:key] // float type
-
-
-// Player Gesture selected mode enum
-typedef NS_ENUM(NSUInteger, GestureMode) {
-    GestureModeVolume,
-    GestureModeBrightness,
-    GestureModeSeek,
-    GestureModeDisabled
-};
-// Gesture Section Enum
-typedef NS_ENUM(NSUInteger, GestureSection) {
-    GestureSectionTop,
-    GestureSectionMiddle,
-    GestureSectionBottom,
-    GestureSectionInvalid
-};
 
 // YTSpeed
 @interface YTVarispeedSwitchControllerOption : NSObject
@@ -91,6 +57,10 @@ typedef NS_ENUM(NSUInteger, GestureSection) {
 @property id delegate;
 - (void)setRate:(float)rate;
 - (void)internalSetRate;
+@end
+
+@interface MLPlayerEventCenter : NSObject
+- (void)broadcastRateChange:(float)rate;
 @end
 
 @interface HAMPlayerInternal : NSObject
@@ -126,19 +96,6 @@ typedef NS_ENUM(NSUInteger, GestureSection) {
 @property (nonatomic, assign, readwrite) BOOL enableSnapToChapter;
 @end
 
-// HelperVC - @bhackel
-@interface HelperVC : UIViewController
-@end 
-
-// Hide Autoplay Mini Preview - @bhackel
-@interface YTAutonavPreviewView : UIView
-@end
-
-// OLED Live Chat - @bhackel
-@interface YTLUserDefaults : NSUserDefaults
-+ (void)exportYtlSettings;
-@end
-
 // Hide Home Tab - @bhackel
 @interface YTPivotBarViewController : UIViewController
 @property NSString *selectedPivotIdentifier;
@@ -156,48 +113,14 @@ typedef NS_ENUM(NSUInteger, GestureSection) {
 @property id <YTResponder> parentResponder;
 @end
 
-// Player Gestures - @bhackel
-@interface YTFineScrubberFilmstripView : UIView
-@end
-@interface YTFineScrubberFilmstripCollectionView : UICollectionView
-@end
-@interface YTPlayerViewController (YTLitePlus) <UIGestureRecognizerDelegate>
-@property (nonatomic, retain) UIPanGestureRecognizer *YTLitePlusPanGesture;
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer;
-@end
-@interface YTWatchFullscreenViewController : YTMultiSizeViewController
-@end
-@interface MPVolumeController : NSObject
-@property (nonatomic, assign, readwrite) float volumeValue;
-@end
-@interface YTPlayerBarController (YTLitePlus)
-- (void)didScrub:(UIPanGestureRecognizer *)gestureRecognizer;
-- (void)startScrubbing;
-- (void)didScrubToPoint:(CGPoint)point;
-- (void)endScrubbingForSeekSource:(int)seekSource;
-@end
-@interface YTMainAppVideoPlayerOverlayViewController (YTLitePlus)
-@property (nonatomic, strong, readwrite) YTPlayerBarController *playerBarController;
-@end
-@interface YTInlinePlayerBarContainerView (YTLitePlus)
-@property UIPanGestureRecognizer *scrubGestureRecognizer;
-@property (nonatomic, strong, readwrite) YTFineScrubberFilmstripView *fineScrubberFilmstrip;
-- (CGFloat)scrubXForScrubRange:(CGFloat)scrubRange;
-@end
-
-// Hide Collapse Button - @arichornlover
-@interface YTMainAppControlsOverlayView (YTLitePlus)
-@property (nonatomic, assign, readwrite) YTQTMButton *watchCollapseButton;
-@end
 
 // SponsorBlock button in Nav bar
 @interface MDCButton : UIButton
 @end
 
-@interface YTRightNavigationButtons (YTLitePlus)
+@interface YTRightNavigationButtons : UIView
 @property YTQTMButton *notificationButton;
 @property YTQTMButton *sponsorBlockButton;
-@property YTQTMButton *videoPlayerButton;
 @end
 
 // BigYTMiniPlayer

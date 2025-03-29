@@ -1,10 +1,16 @@
 #import "../YTLitePlus.h"
 
+static BOOL IsEnabled(NSString *key) {
+    return [[NSUserDefaults standardUserDefaults] boolForKey:key];
+}
 static BOOL isDarkMode() {
     return ([[NSUserDefaults standardUserDefaults] integerForKey:@"page_style"] == 1);
 }
-static BOOL oldDarkTheme() {
+static BOOL oledDarkTheme() {
     return ([[NSUserDefaults standardUserDefaults] integerForKey:@"appTheme"] == 1);
+}
+static BOOL oldDarkTheme() {
+    return ([[NSUserDefaults standardUserDefaults] integerForKey:@"appTheme"] == 2);
 }
 
 // Themes.xm - Theme Options
@@ -396,7 +402,7 @@ UIColor *customColor = [UIColor colorWithRed:0.129 green:0.129 blue:0.129 alpha:
 %end
 
 // OLED dark mode by @BandarHL and modified by @arichorn
-/*
+UIColor* raisedColor = [UIColor blackColor];
 %group gOLED
 %hook YTCommonColorPalette
 - (UIColor *)background1 {
@@ -782,7 +788,6 @@ UIColor *customColor = [UIColor colorWithRed:0.129 green:0.129 blue:0.129 alpha:
 }
 %end
 %end
-*/
 
 // OLED keyboard by @ichitaso <3 - http://gist.github.com/ichitaso/935100fd53a26f18a9060f7195a1be0e
 %group gOLEDKB 
@@ -831,6 +836,9 @@ UIColor *customColor = [UIColor colorWithRed:0.129 green:0.129 blue:0.129 alpha:
     %init;
     if (IsEnabled(@"oledKeyBoard_enabled")) {
         %init(gOLEDKB);
+    }
+    if (oledDarkTheme()) {
+        %init(gOLED);
     }
     if (oldDarkTheme()) {
         %init(gOldDarkTheme);
